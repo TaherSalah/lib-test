@@ -9,7 +9,7 @@ class Activity {
   final String logoUrl;
   final String fileType;
 
-  Activity({
+  const Activity({
     required this.id,
     required this.arName,
     required this.enName,

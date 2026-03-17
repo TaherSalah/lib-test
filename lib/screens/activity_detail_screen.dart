@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../models/activity.dart';
 import '../services/file_service.dart';
@@ -33,6 +34,21 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
   }
 
   Future<void> _download() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'تحقق من اتصالك بالإنترنت لتبدأ تحميل الكتاب',
+              textAlign: TextAlign.right,
+            ),
+          ),
+        );
+      }
+      return;
+    }
+
     setState(() {
       _isDownloading = true;
       _downloadProgress = 0;
@@ -58,13 +74,13 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
       await _checkStatus();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم التحميل والفك بنجاح')),
+          const SnackBar(content: Text('تم التحميل الكتاب بنجاح',textAlign: TextAlign.right,)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('فشل العملية: $e')),
+          SnackBar(content: Text('فشل العملية: $e',textAlign: TextAlign.right,)),
         );
       }
     } finally {
@@ -79,41 +95,18 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
       await _checkStatus();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم حذف الملفات')),
+          const SnackBar(content: Text('تم حذف الملفات',textAlign: TextAlign.right,)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('فشل الحذف: $e')),
+          SnackBar(content: Text('فشل الحذف: $e',textAlign: TextAlign.right,)),
         );
       }
     }
   }
 
-  Future<void> _openOnline() async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult.contains(ConnectivityResult.none)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تحقق من اتصالك بالإنترنت')),
-        );
-      }
-      return;
-    }
-
-    if (mounted) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ReaderScreen(
-            title: widget.activity.arName,
-            url: widget.activity.fileUrl,
-          ),
-        ),
-      );
-    }
-  }
 
   Future<void> _openOffline() async {
     final serverUrl = await widget.activity.localServerUrl;
@@ -174,7 +167,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
             ),
             const SizedBox(height: 48),
             if (_isDownloading) ...[
-              LinearProgressIndicator(value: _downloadProgress),
+              LinearProgressIndicator(value: _downloadProgress,minHeight: 15,borderRadius: BorderRadius.circular(15),),
               const SizedBox(height: 8),
               Text('${(_downloadProgress * 100).toStringAsFixed(0)}%'),
               const SizedBox(height: 24),
@@ -190,7 +183,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
               icon: Icons.menu_book,
               label: 'قراءة الكتاب بدون إنترنت',
               onPressed: _isDownloaded ? _openOffline : null,
-              color: Colors.lightGreen,
+              color: CupertinoColors.systemIndigo,
               isVisible: _isDownloaded,
             ),
             // const SizedBox(height: 16),
@@ -206,7 +199,7 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
               icon: Icons.delete,
               label: 'حذف الكتاب',
               onPressed: _isDownloaded ? _delete : null,
-              color: Colors.redAccent.shade700,
+              color: CupertinoColors.label,
               isVisible: _isDownloaded,
             ),
           ],
@@ -229,15 +222,14 @@ class _ActivityDetailScreenState extends State<ActivityDetailScreen> {
       height: 60,
       child: ElevatedButton(
         onPressed: onPressed,
-        // icon: Icon(icon, color: Colors.white),
-        child: Text(
-          label,
-          style: const TextStyle(fontSize: 20, color: Colors.white,fontWeight: FontWeight.bold),
-        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           disabledBackgroundColor: Colors.grey[300],
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_static/shelf_static.dart';
@@ -29,9 +30,9 @@ class LocalServerService {
           .addHandler(createStaticHandler(directory.path, defaultDocument: 'index.html'));
 
       _server = await io.serve(handler, InternetAddress.loopbackIPv4, 8080);
-      print('Serving at http://${_server!.address.host}:${_server!.port}');
+      debugPrint('Serving at http://${_server!.address.host}:${_server!.port}');
     } catch (e) {
-      print('Error starting local server: $e');
+      debugPrint('Error starting local server: $e');
     }
   }
 
@@ -39,7 +40,7 @@ class LocalServerService {
   Future<void> stop() async {
     await _server?.close(force: true);
     _server = null;
-    print('Server stopped.');
+    debugPrint('Server stopped.');
   }
 
   bool get isRunning => _server != null;

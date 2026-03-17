@@ -3,9 +3,9 @@ import '../models/activity.dart';
 import 'activity_detail_screen.dart';
 
 class ActivitiesListScreen extends StatelessWidget {
-  ActivitiesListScreen({super.key});
+  const ActivitiesListScreen({super.key});
 
-  final List<Activity> activities = [
+  static const List<Activity> activities = [
     Activity(
       id: 92,
       arName: "اقرأ",

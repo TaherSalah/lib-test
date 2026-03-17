@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
           elevation: 0,
         ),
       ),
-      home: ActivitiesListScreen(),
+      home: const ActivitiesListScreen(),
     );
   }
 }
